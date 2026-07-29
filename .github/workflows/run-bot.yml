@@ -29,7 +29,27 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 350
 
+    env:
+      SECRET_BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+      SECRET_OWNER_ID: ${{ secrets.OWNER_ID }}
+      SECRET_ADMIN_LOGIN: ${{ secrets.ADMIN_LOGIN }}
+      SECRET_ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
+      SECRET_ADMIN_IDS: ${{ secrets.ADMIN_IDS }}
+
     steps:
+      - name: 🔍 Preflight — بررسی سکرت‌ها
+        run: |
+          MISSING=""
+          [ -z "$SECRET_BOT_TOKEN" ] && MISSING="$MISSING BOT_TOKEN"
+          [ -z "$SECRET_OWNER_ID" ] && MISSING="$MISSING OWNER_ID"
+          [ -z "$SECRET_ADMIN_LOGIN" ] && MISSING="$MISSING ADMIN_LOGIN"
+          [ -z "$SECRET_ADMIN_PASSWORD" ] && MISSING="$MISSING ADMIN_PASSWORD"
+          if [ -n "$MISSING" ]; then
+            echo "::error title=Secrets ناقص!::این سکرت‌ها در Settings → Secrets and variables → Actions ست نشده‌اند:$MISSING — پنجرهٔ راهنما را دنبال کنید."
+            exit 42
+          fi
+          echo "✅ هر ۴ سکرت ست هستند — بریم بوم!"
+
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
@@ -61,12 +81,12 @@ jobs:
       - name: Create .env from GitHub Secrets
         run: |
           cat > .env <<EOF
-          BOT_TOKEN=${{ secrets.BOT_TOKEN }}
-          OWNER_ID=${{ secrets.OWNER_ID }}
-          ADMIN_IDS=
+          BOT_TOKEN=${SECRET_BOT_TOKEN}
+          OWNER_ID=${SECRET_OWNER_ID}
+          ADMIN_IDS=${SECRET_ADMIN_IDS}
           DB_PATH=data/ghayoomi.db
-          ADMIN_LOGIN=${{ secrets.ADMIN_LOGIN }}
-          ADMIN_PASSWORD=${{ secrets.ADMIN_PASSWORD }}
+          ADMIN_LOGIN=${SECRET_ADMIN_LOGIN}
+          ADMIN_PASSWORD=${SECRET_ADMIN_PASSWORD}
           EOF
 
       - name: Seed database if first run
