@@ -1,0 +1,194 @@
+{
+  "comment": "محتوای اولیهٔ ربات بر اساس ساختار کتاب‌های Vision 1/2/3 — هر وقت خواستی از پنل ادمین بیشترش کن",
+  "cards": [
+    {"grade": "دهم", "lesson": 1, "category": "لغات", "front": "protect", "back": "محافظت کردن", "example": "We must protect the environment.", "tip": "با حرف‌اضافهٔ from: protect sth from danger"},
+    {"grade": "دهم", "lesson": 1, "category": "لغات", "front": "environment", "back": "محیط زیست", "example": "Pollution hurts the environment.", "tip": "تلفظ: این‌وایرُن‌مِنت"},
+    {"grade": "دهم", "lesson": 1, "category": "لغات", "front": "wildlife", "back": "حیات وحش", "example": "Iran has amazing wildlife.", "tip": "یک کلمهٔ مرکب: wild + life"},
+    {"grade": "دهم", "lesson": 1, "category": "لغات", "front": "destroy", "back": "تخریب کردن", "example": "People destroy forests every day.", "tip": "اسمش: destruction"},
+    {"grade": "دهم", "lesson": 1, "category": "لغات", "front": "endangered", "back": "در معرض خطر انقراض", "example": "The Asiatic cheetah is an endangered animal.", "tip": "معمولاً همراه species یا animal میاد"},
+    {"grade": "دهم", "lesson": 1, "category": "لغات", "front": "pollute", "back": "آلوده کردن", "example": "Factories pollute the air and water.", "tip": "اسمش: pollution"},
+    {"grade": "دهم", "lesson": 1, "category": "گرامر", "front": "Present Perfect", "back": "مضارع نقلی: have/has + p.p — برای تجربیات بدون زمان مشخص", "example": "I have visited many forests.", "tip": "یادت باشه: since + نقطهٔ شروع | for + مدت"},
+    {"grade": "دهم", "lesson": 1, "category": "گرامر", "front": "Present Perfect with ever/never", "back": "با ever (تا حالا) و never (هیچ‌وقت) برای سؤال و نفی تجربه", "example": "Have you ever seen a cheetah? — I have never seen one.", "tip": "ever قبل از اسم مفعول فعل میاد: ***have EVER seen***"},
+    {"grade": "دهم", "lesson": 1, "category": "عبارات", "front": "take care of", "back": "مراقبت کردن از", "example": "We should take care of nature.", "tip": "مترادف: look after"},
+    {"grade": "دهم", "lesson": 1, "category": "عبارات", "front": "in danger", "back": "در خطر", "example": "Many animals are in danger.", "tip": "حواست باشه: in danger ≠ dangerous (خطرناک)"},
+
+    {"grade": "دهم", "lesson": 2, "category": "لغات", "front": "amazing", "back": "حیرت‌انگیز، شگفت‌آور", "example": "The camel is an amazing animal.", "tip": "فرقش با amazed: amazing = شگفت‌انگیز | amazed = متحیر"},
+    {"grade": "دهم", "lesson": 2, "category": "لغات", "front": "creature", "back": "موجود، آفریده", "example": "The ocean is full of strange creatures.", "tip": ""},
+    {"grade": "دهم", "lesson": 2, "category": "لغات", "front": "desert", "back": "بیابان، کویر", "example": "Camels can live in the desert for weeks.", "tip": "مراقب dessert (دسر) باش! 🍰"},
+    {"grade": "دهم", "lesson": 2, "category": "لغات", "front": "survive", "back": "زنده ماندن، بقا داشتن", "example": "Few plants can survive without water.", "tip": "با حرف اضافه: survive IN the desert"},
+    {"grade": "دهم", "lesson": 2, "category": "لغات", "front": "wonder", "back": "شگفتی / فکر کردن، کنجکاو بودن", "example": "The whale is a natural wonder. — I wonder how it sleeps.", "tip": ""},
+    {"grade": "دهم", "lesson": 2, "category": "گرامر", "front": "Comparatives & Superlatives", "back": "مقایسه‌ای: taller ER + than | عالی: the tallEST", "example": "The blue whale is the biggest animal in the world.", "tip": "صفات تک‌هجایی: +er/the +est | کش‌دار: more/the most"},
+    {"grade": "دهم", "lesson": 2, "category": "گرامر", "front": "as ... as", "back": "به همان اندازه: as + adj + as", "example": "An ostrich can run as fast as a car!", "tip": "نفیش: not as/so ... as"},
+    {"grade": "دهم", "lesson": 2, "category": "عبارات", "front": "believe it or not", "back": "باور کن یا نکن", "example": "Believe it or not, some frogs never sleep!", "tip": "عبارت کلاسیک برای جالب‌تر کردن جمله"},
+    {"grade": "دهم", "lesson": 2, "category": "عبارات", "front": "be known for", "back": "به خاطر چیزی مشهور بودن", "example": "Camels are known for living without water for a long time.", "tip": ""},
+
+    {"grade": "دهم", "lesson": 3, "category": "لغات", "front": "knowledge", "back": "دانش، آگاهی", "example": "Knowledge is power.", "tip": "k تلفظ نمی‌شه! 🔇"},
+    {"grade": "دهم", "lesson": 3, "category": "لغات", "front": "scientist", "back": "دانشمند، پژوهشگر", "example": "Scientists help us understand the world.", "tip": ""},
+    {"grade": "دهم", "lesson": 3, "category": "لغات", "front": "discover", "back": "کشف کردن", "example": "Edison discovered the light bulb.", "tip": "dis = روی پوش را برداشتن"},
+    {"grade": "دهم", "lesson": 3, "category": "لغات", "front": "improve", "back": "بهبود دادن، بالا بردن", "example": "Reading improves your knowledge.", "tip": ""},
+    {"grade": "دهم", "lesson": 3, "category": "گرامر", "front": "Present Simple vs Present Continuous", "back": "حال ساده = عادت/حقیقت | استمراری = در حال وقوع", "example": "The sun rises in the east. — I am studying English now.", "tip": "ساده: always/usually | استمراری: now/at the moment"},
+    {"grade": "دهم", "lesson": 3, "category": "گرامر", "front": "Be able to", "back": "توانستن در زمان‌های مختلف (جایگزین can)", "example": "One day we will be able to travel to Mars.", "tip": "can فقط برای حال و گذشته‌ست؛ برای آینده: will be able to"},
+    {"grade": "دهم", "lesson": 3, "category": "عبارات", "front": "keep in touch", "back": "در تماس ماندن", "example": "Thanks to technology, we can keep in touch with friends easily.", "tip": ""},
+    {"grade": "دهم", "lesson": 3, "category": "عبارات", "front": "make progress", "back": "پیشرفت کردن", "example": "She made great progress in English this year.", "tip": ""},
+
+    {"grade": "دهم", "lesson": 4, "category": "لغات", "front": "journey", "back": "سفر (طولانی)", "example": "The journey to Mashhad took ten hours.", "tip": "trip = کوتاه | journey = طولانی | travel = کلی"},
+    {"grade": "دهم", "lesson": 4, "category": "لغات", "front": "destination", "back": "مقصد", "example": "Kish is a popular destination in Iran.", "tip": ""},
+    {"grade": "دهم", "lesson": 4, "category": "لغات", "front": "luggage", "back": "بار و بنه، چمدان‌ها", "example": "My luggage is heavy.", "tip": "کلمهٔ غیرقابل‌شمارش — لuggages ❌"},
+    {"grade": "دهم", "lesson": 4, "category": "لغات", "front": "abroad", "back": "خارج از کشور", "example": "My cousin lives abroad.", "tip": "go/study/live + abroad"},
+    {"grade": "دهم", "lesson": 4, "category": "گرامر", "front": "Be going to", "back": "قصد و برنامهٔ آینده: am/is/are + going to + فعل", "example": "We are going to visit Shiraz next week.", "tip": "برای برنامه‌ریزی‌شده — will برای تصمیم لحظه‌ای"},
+    {"grade": "دهم", "lesson": 4, "category": "گرامر", "front": "Future Time Expressions", "back": "next week / soon / tomorrow / in two days", "example": "I am going to travel tomorrow.", "tip": ""},
+    {"grade": "دهم", "lesson": 4, "category": "عبارات", "front": "get around", "back": "رفت‌وآمد کردن در شهر", "example": "It's easy to get around Paris by metro.", "tip": ""},
+    {"grade": "دهم", "lesson": 4, "category": "عبارات", "front": "check in", "back": "تحویل بلیت/ثبت‌نام هتل", "example": "We checked in at the airport two hours before the flight.", "tip": "ضدش: check out"},
+
+    {"grade": "یازدهم", "lesson": 1, "category": "لغات", "front": "personality", "back": "شخصیت، ویژگی‌های اخلاقی", "example": "She has a warm and friendly personality.", "tip": ""},
+    {"grade": "یازدهم", "lesson": 1, "category": "لغات", "front": "behavior", "back": "رفتار، کردار", "example": "His behavior changed after the accident.", "tip": "انگلیسی آمریکایی: behavior | بریتانیایی: behaviour"},
+    {"grade": "یازدهم", "lesson": 1, "category": "لغات", "front": "emotion", "back": "احساس، عاطفه", "example": "Music affects our emotions.", "tip": "اسم ریشه: emote (کم‌کاربرد)"},
+    {"grade": "یازدهم", "lesson": 1, "category": "لغات", "front": "generous", "back": "سخاوتمند، بخشنده", "example": "He is generous with his time and money.", "tip": "فرقش با kind: سخاوت مادی/زمانی"},
+    {"grade": "یازدهم", "lesson": 1, "category": "لغات", "front": "attitude", "back": "نگرش، دیدگاه", "example": "A positive attitude changes everything.", "tip": ""},
+    {"grade": "یازدهم", "lesson": 1, "category": "گرامر", "front": "Past Simple vs Past Continuous", "back": "گذشتهٔ ساده = کار تمام‌شده | استمراری = در حال انجام", "example": "I was reading when she arrived.", "tip": "while + استمراری | when + ساده"},
+    {"grade": "یازدهم", "lesson": 1, "category": "گرامر", "front": "Used to", "back": "عادتی در گذشته که حالا دیگه نیست", "example": "I used to be shy, but I'm not anymore.", "tip": "نفی: didn't use to"},
+    {"grade": "یازدهم", "lesson": 1, "category": "عبارات", "front": "get along with", "back": "کنار آمدن با کسی", "example": "I get along well with my classmates.", "tip": ""},
+    {"grade": "یازدهم", "lesson": 1, "category": "عبارات", "front": "in other words", "back": "به عبارت دیگر، یعنی", "example": "He is an introvert — in other words, he likes being alone.", "tip": ""},
+
+    {"grade": "یازدهم", "lesson": 2, "category": "لغات", "front": "lifestyle", "back": "سبک زندگی", "example": "Exercise is part of a healthy lifestyle.", "tip": ""},
+    {"grade": "یازدهم", "lesson": 2, "category": "لغات", "front": "avoid", "back": "اجتناب کردن، پرهیز کردن", "example": "Avoid eating too much sugar.", "tip": "بعدش: فعل ing — avoid eating ✅"},
+    {"grade": "یازدهم", "lesson": 2, "category": "لغات", "front": "diet", "back": "رژیم غذایی", "example": "A balanced diet keeps you healthy.", "tip": ""},
+    {"grade": "یازدهم", "lesson": 2, "category": "لغات", "front": "energy", "back": "انرژی، نیرو", "example": "Breakfast gives you energy for the day.", "tip": ""},
+    {"grade": "یازدهم", "lesson": 2, "category": "لغات", "front": "reduce", "back": "کاهش دادن", "example": "Walking daily reduces stress.", "tip": ""},
+    {"grade": "یازدهم", "lesson": 2, "category": "گرامر", "front": "Should / Ought to", "back": "توصیه و پیشنهاد: باید", "example": "You should sleep eight hours a night.", "tip": "نفی: shouldn't"},
+    {"grade": "یازدهم", "lesson": 2, "category": "گرامر", "front": "Gerunds & Infinitives", "back": "بعضی فعل‌ها + ing (enjoy) / بعضی + to (want)", "example": "I enjoy swimming. — I want to lose weight.", "tip": "enjoy/avoid/suggest + ing | want/hope/plan + to"},
+    {"grade": "یازدهم", "lesson": 2, "category": "عبارات", "front": "cut down on", "back": "کم کردن مصرف چیزی", "example": "You should cut down on fast food.", "tip": "کلوکیشن مهم امتحانی! ⭐"},
+    {"grade": "یازدهم", "lesson": 2, "category": "عبارات", "front": "keep fit", "back": "در فرم ماندن، تناسب اندام", "example": "She keeps fit by running every morning.", "tip": ""},
+
+    {"grade": "یازدهم", "lesson": 3, "category": "لغات", "front": "culture", "back": "فرهنگ", "example": "Every country has its own culture.", "tip": ""},
+    {"grade": "یازدهم", "lesson": 3, "category": "لغات", "front": "museum", "back": "موزه", "example": "The National Museum of Tehran is amazing.", "tip": ""},
+    {"grade": "یازدهم", "lesson": 3, "category": "لغات", "front": "painting", "back": "نقاشی، تابلو", "example": "This painting is very old and valuable.", "tip": "paint = فعل — painting = نقاشی"},
+    {"grade": "یازدهم", "lesson": 3, "category": "لغات", "front": "tradition", "back": "سنت، رسم", "example": "Nowruz is an ancient tradition.", "tip": "صفتش: traditional"},
+    {"grade": "یازدهم", "lesson": 3, "category": "گرامر", "front": "Present Perfect vs Past Simple", "back": "نقلی = بدون زمان مشخص | ساده = زمان مشخص گذشته", "example": "I have visited many museums. I visited one last week.", "tip": "last week/yesterday = گذشتهٔ ساده حتماً!"},
+    {"grade": "یازدهم", "lesson": 3, "category": "گرامر", "front": "Already / Yet / Just", "back": "قبلاً / هنوز / همین الآن — با مضارع نقلی", "example": "I have just finished my homework. — Have you done it yet?", "tip": "yet آخر جملهٔ نفی و سؤال"},
+    {"grade": "یازدهم", "lesson": 3, "category": "عبارات", "front": "be interested in", "back": "علاقه‌مند بودن به", "example": "Are you interested in modern art?", "tip": ""},
+    {"grade": "یازدهم", "lesson": 3, "category": "عبارات", "front": "take place", "back": "برگزار شدن، اتفاق افتادن", "example": "The poetry night takes place every Friday.", "tip": ""},
+
+    {"grade": "دوازدهم", "lesson": 1, "category": "لغات", "front": "appreciate", "back": "قدردانی کردن؛ درک کردن ارزش", "example": "I really appreciate your help.", "tip": "فرمول سری: I appreciate it. 🙏"},
+    {"grade": "دوازدهم", "lesson": 1, "category": "لغات", "front": "grateful", "back": "سپاسگزار، ممنون قلباً", "example": "We are grateful for your kindness.", "tip": "grateful TO someone FOR something"},
+    {"grade": "دوازدهم", "lesson": 1, "category": "لغات", "front": "kindness", "back": "مهربانی، لطف", "example": "Her kindness made my day.", "tip": "kind + ness"},
+    {"grade": "دوازدهم", "lesson": 1, "category": "لغات", "front": "support", "back": "حمایت کردن / حمایت", "example": "My family always supports me.", "tip": ""},
+    {"grade": "دوازدهم", "lesson": 1, "category": "لغات", "front": "responsibility", "back": "مسئولیت", "example": "Helping parents is our responsibility.", "tip": "take responsibility for ..."},
+    {"grade": "دوازدهم", "lesson": 1, "category": "گرامر", "front": "Passive Voice (Present/Past)", "back": "مجهول: am/is/are/was/were + p.p", "example": "Rice is grown in Gilan. — The bridge was built 100 years ago.", "tip": "فاعل نامشخص/مهم‌تر = مجهول"},
+    {"grade": "دوازدهم", "lesson": 1, "category": "گرامر", "front": "Tag Questions", "back": "جانۀ سؤال: آری؟ نه؟", "example": "You are polite, aren't you? — She can't drive, can she?", "tip": "مثبت → منفی جانه | منفی → مثبت"},
+    {"grade": "دوازدهم", "lesson": 1, "category": "عبارات", "front": "Thank you very much. / I really appreciate it.", "back": "خیلی ممنون. / واقعاً قدردانم. — پاسخ: You're welcome!", "example": "Thanks for everything. — You're very welcome!", "tip": "⭐ پاسخ‌های You're welcome / My pleasure / Not at all"},
+    {"grade": "دوازدهم", "lesson": 1, "category": "عبارات", "front": "lend a hand", "back": "دستیاری کردن، کمک کردن", "example": "Could you lend me a hand with this heavy box?", "tip": ""},
+
+    {"grade": "دوازدهم", "lesson": 2, "category": "لغات", "front": "dictionary", "back": "دیکشنری، فرهنگ لغت", "example": "Look up new words in a dictionary.", "tip": ""},
+    {"grade": "دوازدهم", "lesson": 2, "category": "لغات", "front": "definition", "back": "تعریف، معنی دقیق", "example": "Check the definition before using the word.", "tip": ""},
+    {"grade": "دوازدهم", "lesson": 2, "category": "لغات", "front": "meaning", "back": "معنی، مفهوم", "example": "What's the meaning of this word?", "tip": ""},
+    {"grade": "دوازدهم", "lesson": 2, "category": "لغات", "front": "search", "back": "جستجو کردن / جستجو", "example": "Search the internet for more details.", "tip": "search for sth"},
+    {"grade": "دوازدهم", "lesson": 2, "category": "گرامر", "front": "Present Perfect Continuous", "back": "have/has + been + ing — کاری که از گذشته ادامه دارد", "example": "I have been studying English for three years.", "tip": "for/since + مدت/نقطهٔ شروع"},
+    {"grade": "دوازدهم", "lesson": 2, "category": "گرامر", "front": "If Clause Type 1", "back": "شرط واقعی: If + present ..., will + فعل", "example": "If you study hard, you will pass the exam.", "tip": "if = اگر (واقعی)"},
+    {"grade": "دوازدهم", "lesson": 2, "category": "عبارات", "front": "look up", "back": "جستجو کردن کلمه در دیکشنری", "example": "If you don't know the word, look it up!", "tip": "⭐ عم‌فعلهای جداشدنی: look IT up"},
+    {"grade": "دوازدهم", "lesson": 2, "category": "عبارات", "front": "in other words", "back": "به عبارت دیگر", "example": "He's bilingual — in other words, he speaks two languages.", "tip": ""},
+
+    {"grade": "دوازدهم", "lesson": 3, "category": "لغات", "front": "renewable", "back": "قابل تجدید", "example": "Solar power is a renewable energy source.", "tip": "new → renew → renewable"},
+    {"grade": "دوازدهم", "lesson": 3, "category": "لغات", "front": "solar", "back": "خورشیدی", "example": "Solar panels turn sunlight into electricity.", "tip": "مقابلش: fossil fuels"},
+    {"grade": "دوازدهم", "lesson": 3, "category": "لغات", "front": "energy source", "back": "منبع انرژی", "example": "Wind is a clean energy source.", "tip": ""},
+    {"grade": "دوازدهم", "lesson": 3, "category": "لغات", "front": "produce", "back": "تولید کردن", "example": "This factory produces cars.", "tip": "اسمش: production"},
+    {"grade": "دوازدهم", "lesson": 3, "category": "لغات", "front": "resource", "back": "منبع، سرمایه", "example": "Water is a valuable natural resource.", "tip": ""},
+    {"grade": "دوازدهم", "lesson": 3, "category": "گرامر", "front": "Future with will", "back": "پیش‌بینی و تصمیم لحظه‌ای: will + فعل", "example": "In the future, people will use more solar energy.", "tip": "نمی‌شه برای برنامهٔ قطعی → going to"},
+    {"grade": "دوازدهم", "lesson": 3, "category": "گرامر", "front": "Passive Voice (Future)", "back": "مجهول آینده: will be + p.p", "example": "Clean energy will be produced more in the future.", "tip": ""},
+    {"grade": "دوازدهم", "lesson": 3, "category": "عبارات", "front": "depend on", "back": "بستگی داشتن به", "example": "Our future depends on clean energy.", "tip": "⭐ آن depends on the weather."},
+    {"grade": "دوازدهم", "lesson": 3, "category": "عبارات", "front": "run out of", "back": "تمام شدن منابع", "example": "The world is running out of fossil fuels.", "tip": ""}
+  ],
+  "exams": [
+    {
+      "title": "🎯 آزمون لغات درس ۱ — Saving Nature",
+      "grade": "دهم",
+      "lessons": "1",
+      "time_limit": 600,
+      "questions": [
+        {"text": "معنی کلمهٔ «environment» کدام است؟", "options": ["محیط زیست", "حیات وحش", "در معرض خطر", "بازیافت"], "correct": 1, "explanation": "environment = محیط زیست 🌿"},
+        {"text": "«We must ......... wild animals.» — کدام فعل درست است؟", "options": ["destroy", "protect", "pollute", "endanger"], "correct": 2, "explanation": "protect = محافظت کردن 🛡"},
+        {"text": "«endangered species» یعنی چه؟", "options": ["گونه‌های خطرناک", "گونه‌های در معرض انقراض", "گونه‌های وحشی", "گونه‌های زیبا"], "correct": 2, "explanation": "endangered = در معرض خطر — dangerous = خطرناک ⚠️"},
+        {"text": "«Factories ......... the air with smoke.»", "options": ["clean", "produce", "pollute", "save"], "correct": 3, "explanation": "pollute = آلوده کردن 🏭"},
+        {"text": "«take care of» معادل کدام است؟", "options": ["مراقبت کردن از", "تخریب کردن", "بازیافت کردن", "ذخیره کردن"], "correct": 1, "explanation": "take care of = look after = مراقبت کردن 💚"}
+      ]
+    },
+    {
+      "title": "✏️ آزمون گرامر درس ۱ و ۲ — پایه دهم",
+      "grade": "دهم",
+      "lessons": "1,2",
+      "time_limit": 900,
+      "questions": [
+        {"text": "«Have you ......... seen a panda?»", "options": ["ever", "yet", "since", "for"], "correct": 1, "explanation": "ever = تا حالا — با جملهٔ سؤالی مضارع نقلی ✅"},
+        {"text": "«I ......... never ......... a desert.» — کدام ترکیب درست است؟", "options": ["have / visited", "has / visited", "have / visit", "did / visited"], "correct": 1, "explanation": "مضارع نقلی: have + p.p 📚"},
+        {"text": "«The blue whale is ......... animal in the world.»", "options": ["bigger", "the biggest", "the most big", "biggest than"], "correct": 2, "explanation": "صفت برتر: the + est 🐋"},
+        {"text": "«An ostrich can run as fast ......... a car.»", "options": ["than", "as", "like", "to"], "correct": 2, "explanation": "ساختار as ... as 🏃"},
+        {"text": "کدام جمله از نظر گرامری درست است؟", "options": ["I have visited Iran last year.", "She has ever been to Mashhad.", "We have never seen the Caspian Sea.", "He have finished his homework."], "correct": 3, "explanation": "never بین have و p.p میاد ✅"}
+      ]
+    },
+    {
+      "title": "🎯 آزمون لغات درس ۱ — Understanding People",
+      "grade": "یازدهم",
+      "lessons": "1",
+      "time_limit": 600,
+      "questions": [
+        {"text": "«personality» یعنی چه؟", "options": ["رفتار لحظه‌ای", "ویژگی‌های اخلاقی فرد", "ظاهر آدمی", "نظر دیگران"], "correct": 2, "explanation": "personality = شخصیت و ویژگی‌های اخلاقی 🧠"},
+        {"text": "«He is ......... — he always helps people in need.»", "options": ["rude", "generous", "mean", "selfish"], "correct": 2, "explanation": "generous = بخشنده، سخاوتمند 🤝"},
+        {"text": "«I ......... ......... shy, but now I'm confident.»", "options": ["used / to be", "use / to be", "am / used", "am / using"], "correct": 1, "explanation": "used to = عادت گذشته که تمام شده 🔄"},
+        {"text": "منظور از «attitude» چیست؟", "options": ["رفتار بدنی", "نگرش و دیدگاه", "احساس موقت", "استعداد"], "correct": 2, "explanation": "attitude = نگرش 🎯"},
+        {"text": "«get along with» یعنی؟", "options": ["دعوا کردن با", "کنار آمدن با", "دور بودن از", "تقلید کردن از"], "correct": 2, "explanation": "get along with somebody = کنار آمدن با کسی ✨"}
+      ]
+    },
+    {
+      "title": "✏️ آزمون گرامر درس ۲ — Healthy Lifestyle",
+      "grade": "یازدهم",
+      "lessons": "2",
+      "time_limit": 900,
+      "questions": [
+        {"text": "«You should avoid ......... junk food.»", "options": ["eat", "to eat", "eating", "eats"], "correct": 3, "explanation": "بعد از avoid همیشه فعل ing میاد 🍔"},
+        {"text": "«I enjoy ......... in the morning.»", "options": ["walk", "walking", "to walk", "walks"], "correct": 2, "explanation": "enjoy + ing 🚶"},
+        {"text": "«You ......... sleep at least 8 hours.» (توصیه)", "options": ["should", "must to", "have", "ought"], "correct": 1, "explanation": "should = توصیه 😴"},
+        {"text": "«cut down on» یعنی چه؟", "options": ["افزایش دادن", "کم کردن مصرف", "ترک کامل", "امتحان کردن"], "correct": 2, "explanation": "cut down on fast food = کمتر خوردن 🍟"},
+        {"text": "کدام گزینه از نظر گرامری درست است؟", "options": ["She suggested to go to the gym.", "He decided going to the gym.", "They planned to exercise daily.", "I enjoy to cook healthy food."], "correct": 3, "explanation": "plan + to + فعل ✅"}
+      ]
+    },
+    {
+      "title": "🏛 آزمون درس ۳ — Art and Culture",
+      "grade": "یازدهم",
+      "lessons": "3",
+      "time_limit": 1200,
+      "questions": [
+        {"text": "«tradition» یعنی؟", "options": ["نوآوری", "سنت و رسم", "موزه", "هنر"], "correct": 2, "explanation": "tradition = سنت / traditional = سنتی 🏺"},
+        {"text": "«Have you ......... been to the National Museum?»", "options": ["yet", "already", "ever", "still"], "correct": 3, "explanation": "ever = تا حالا 🏛"},
+        {"text": "«I ......... my homework yesterday.» — مضارع نقلی یا ساده؟", "options": ["have done", "did", "have did", "am doing"], "correct": 2, "explanation": "yesterday → گذشتهٔ ساده حتماً ✅"},
+        {"text": "«take place» یعنی؟", "options": ["جا گرفتن", "برگزار شدن", "ترک کردن", "برنده شدن"], "correct": 2, "explanation": "take place = happen (رسمي) 🎭"},
+        {"text": "«She has ......... finished her painting.» (همین الآن)", "options": ["ever", "just", "never", "since"], "correct": 2, "explanation": "just = همین الآن 🎨"}
+      ]
+    },
+    {
+      "title": "🙏 آزمون درس ۱ — Sense of Appreciation",
+      "grade": "دوازدهم",
+      "lessons": "1",
+      "time_limit": 600,
+      "questions": [
+        {"text": "«I really ......... your help.» — با کدام فعل جمله کامل می‌شود؟", "options": ["appreciate", "accept", "respect", "allow"], "correct": 1, "explanation": "appreciate = قدردانی کردن 🙏"},
+        {"text": "«Rice ......... in Gilan.» — صوت مجهول درست:", "options": ["grows", "is grown", "is grow", "grew"], "correct": 2, "explanation": "Passive present: is/are + p.p 🌾"},
+        {"text": "«You are polite, .........?» — جانهٔ پرسش:", "options": ["are you", "aren't you", "do you", "don't you"], "correct": 2, "explanation": "مثبت → منفی جانه: aren't you? 🏷"},
+        {"text": "«Thank you for your help.» — پاسخ مناسب:", "options": ["Because.", "You're welcome!", "Not well!", "Thank you!"], "correct": 2, "explanation": "You're welcome = خواهش می‌کنم 😊"},
+        {"text": "«grateful» معادل فارسی:", "options": ["بزرگ", "سپاسگزار", "مهربان", "دقیق"], "correct": 2, "explanation": "grateful to sb for sth 🫶"}
+      ]
+    },
+    {
+      "title": "⚡ آزمون درس ۲ و ۳ — پایه دوازدهم",
+      "grade": "دوازدهم",
+      "lessons": "2,3",
+      "time_limit": 1200,
+      "questions": [
+        {"text": "«Look up» یعنی چه؟", "options": ["بالا نگاه کردن", "جستجو کردن در دیکشنری", "پایین آوردن", "پیدا کردن"], "correct": 2, "explanation": "look sth up = جستجو 📖"},
+        {"text": "«If you study hard, you ......... pass the exam.»", "options": ["would", "will", "can", "had"], "correct": 2, "explanation": "If type 1: if + present → will + فعل 🔀"},
+        {"text": "«I have been studying English ......... three years.»", "options": ["since", "for", "ago", "from"], "correct": 2, "explanation": "for + مدت زمان ⏳"},
+        {"text": "«solar energy» انرژی ......... است.", "options": ["فاسیل", "گرم‌زمینی", "خورشیدی", "بادی"], "correct": 3, "explanation": "solar = خورشیدی ☀️"},
+        {"text": "«The world is running ......... ......... fossil fuels.»", "options": ["out / of", "out / from", "of / out", "in / of"], "correct": 1, "explanation": "run out of = تمام شدن ⏳"}
+      ]
+    }
+  ]
+}

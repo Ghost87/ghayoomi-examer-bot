@@ -1,0 +1,24 @@
+# env و سکرت‌ها
+.env
+*.env
+!.env.example
+
+# دیتابیس
+data/*.db
+data/*.sqlite*
+data/backups/
+
+# پایتون
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+.pytest_cache/
+
+# سیستم‌عامل
+.DS_Store
+Thumbs.db
+
+# لاگ
+*.log
