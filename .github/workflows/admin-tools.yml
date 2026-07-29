@@ -60,15 +60,20 @@ jobs:
             curl -sf -H "Authorization: Bearer $GH_TOKEN" \
                  -H "Accept: application/vnd.github+json" "$@"
           }
-          ACTIVE=$(api "https://api.github.com/repos/$REPO/actions/workflows/run-bot.yml/runs?status=in_progress&per_page=1" \
-            | python3 -c "import sys,json;print(json.load(sys.stdin).get('total_count',0))")
-          QUEUED=$(api "https://api.github.com/repos/$REPO/actions/workflows/run-bot.yml/runs?status=queued&per_page=1" \
-            | python3 -c "import sys,json;print(json.load(sys.stdin).get('total_count',0))")
-          if [ "$ACTIVE" != "0" ] || [ "$QUEUED" != "0" ]; then
-            echo "::error title=ربات روشن است!::اشتراک Actions → اجرای فعال «Run Ghayoomi Examer Bot» را Cancel کنید و دوباره این ابزار را اجرا کنید. (درحال‌اجرا=$ACTIVE درصف=$QUEUED)"
+          count_status() {
+            api "https://api.github.com/repos/$REPO/actions/workflows/run-bot.yml/runs?status=$1&per_page=1" \
+              | python3 -c "import sys,json;print(json.load(sys.stdin).get('total_count',0))"
+          }
+          ACTIVE=$(count_status in_progress)
+          QUEUED=$(count_status queued)
+          WAITING=$(count_status waiting)
+          REQUESTED=$(count_status requested)
+          BUSY=$((ACTIVE + QUEUED + WAITING + REQUESTED))
+          if [ "$BUSY" != "0" ]; then
+            echo "::error title=ربات روشن/در صف است!::ابتدا Actions → اجرای «Run Ghayoomi Examer Bot» را Cancel کنید، چند ثانیه صبر کنید و دوباره این ابزار را اجرا کنید. (اجرا=$ACTIVE صف=$QUEUED انتظار=$WAITING درخواستی=$REQUESTED)"
             exit 1
           fi
-          echo "✅ هیچ اجرای ربات فعال نیست — امنه، ادامه می‌دهیم."
+          echo "✅ هیچ اجرای ربات فعال/درصف/درانتظار نیست — امنه، ادامه می‌دهیم."
 
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -111,13 +116,17 @@ jobs:
             curl -sf -H "Authorization: Bearer $GH_TOKEN" \
                  -H "Accept: application/vnd.github+json" "$@"
           }
-          ACTIVE=$(api "https://api.github.com/repos/$REPO/actions/workflows/run-bot.yml/runs?status=in_progress&per_page=1" \
-            | python3 -c "import sys,json;print(json.load(sys.stdin).get('total_count',0))")
-          if [ "$ACTIVE" != "0" ]; then
-            echo "::error::در این لحظه اجرای ربات تازه‌ای شروع شده — برای جلوگیری از تداخل، ذخیره انجام نمی‌شود. لطفاً دوباره ابزار را اجرا کنید."
+          BUSY=0
+          for S in in_progress queued waiting requested; do
+            C=$(api "https://api.github.com/repos/$REPO/actions/workflows/run-bot.yml/runs?status=$S&per_page=1" \
+              | python3 -c "import sys,json;print(json.load(sys.stdin).get('total_count',0))")
+            BUSY=$((BUSY + C))
+          done
+          if [ "$BUSY" != "0" ]; then
+            echo "::error::در همین لحظه اجرای ربات تازه‌ای شروع/صف گرفته — برای جلوگیری از تداخل، ذخیره انجام نمی‌شود. پاسخ: ابتدا آن اجرا را Cancel کنید و دوباره این ابزار را اجرا کنید."
             exit 1
           fi
-          echo "✅ همچنان امن است."
+          echo "✅ همچنان امن است (هیچ اجرای ربات در هیچ وضعیتی نیست)."
 
       - name: 💾 ذخیره‌ی دیتابیس پاک‌سازی‌شده روی bot-data
         env:
