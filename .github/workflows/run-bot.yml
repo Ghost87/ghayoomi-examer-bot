@@ -1,0 +1,137 @@
+name: Run Ghayoomi Examer Bot (manual)
+
+# فقط با دکمه‌ی دستی "Run workflow" از تب Actions روشن می‌شود.
+# هیچ زمان‌بندی خودکاری ندارد — یعنی خودت کنترل کامل روشن/خاموش شدن را داری.
+#
+# نکات مهم:
+# - هر اجرا حداکثر ۳۵۰ دقیقه (نزدیک به ۶ ساعت) اجازه دارد بماند، بعدش خودکار متوقف می‌شود.
+# - برای خاموش کردن زودتر: برو به تب Actions → همین اجرا → دکمه "Cancel workflow".
+# - دیتابیس بین هر اجرا روی برنچ جدا به اسم bot-data ذخیره و بازیابی می‌شود؛
+#   یعنی کاربران، آزمون‌ها و فلش‌کارت‌ها بین دفعات روشن‌کردن از بین نمی‌روند.
+
+on:
+  workflow_dispatch:
+    inputs:
+      run_minutes:
+        description: "چند دقیقه روشن بماند؟ (حداکثر پیشنهادی 340)"
+        required: false
+        default: "180"
+
+concurrency:
+  group: ghayoomi-examer-bot-live
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  run-bot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Restore persistent database from bot-data branch
+        run: |
+          set -e
+          mkdir -p data
+          if git ls-remote --exit-code --heads origin bot-data >/dev/null 2>&1; then
+            git fetch origin bot-data:bot-data --depth=1
+            git checkout bot-data -- data 2>/dev/null || true
+            echo "دیتابیس قبلی بازیابی شد (اگر وجود داشت)."
+            ls -la data || true
+          else
+            echo "برنچ bot-data هنوز وجود ندارد — اولین اجرا با دیتابیس خالی شروع می‌شود."
+          fi
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Create .env from GitHub Secrets
+        run: |
+          cat > .env <<EOF
+          BOT_TOKEN=${{ secrets.BOT_TOKEN }}
+          OWNER_ID=${{ secrets.OWNER_ID }}
+          ADMIN_IDS=
+          DB_PATH=data/ghayoomi.db
+          ADMIN_LOGIN=${{ secrets.ADMIN_LOGIN }}
+          ADMIN_PASSWORD=${{ secrets.ADMIN_PASSWORD }}
+          EOF
+
+      - name: Seed database if first run
+        run: |
+          if [ ! -f data/ghayoomi.db ]; then
+            echo "دیتابیس پیدا نشد — پر کردن محتوای اولیه..."
+            python scripts/seed_database.py || true
+          else
+            echo "دیتابیس موجود است، seed رد می‌شود."
+          fi
+
+      - name: Run bot for the requested window
+        run: |
+          set +e
+          MINUTES="${{ github.event.inputs.run_minutes }}"
+          MINUTES="${MINUTES:-180}"
+          SECONDS_TOTAL=$((MINUTES * 60))
+          echo "ربات برای حدود $MINUTES دقیقه اجرا می‌شود..."
+          timeout "$SECONDS_TOTAL" python bot.py
+          echo "اجرای ربات پایان یافت (کد: $?)."
+          exit 0
+
+      - name: Save database back to bot-data branch
+        if: always()
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -e
+          if [ ! -f data/ghayoomi.db ]; then
+            echo "فایل دیتابیس پیدا نشد — چیزی برای ذخیره نیست."
+            exit 0
+          fi
+
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          WORK=$(mktemp -d)
+          REPO_URL="https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+
+          if git ls-remote --exit-code --heads origin bot-data >/dev/null 2>&1; then
+            git clone --branch bot-data --depth 1 "$REPO_URL" "$WORK"
+          else
+            git clone --depth 1 "$REPO_URL" "$WORK"
+            cd "$WORK"
+            git checkout --orphan bot-data
+            find . -mindepth 1 -maxdepth 1 ! -name '.git' -exec rm -rf {} +
+            cd -
+          fi
+
+          rm -rf "$WORK/data"
+          mkdir -p "$WORK/data"
+          cp -a data/. "$WORK/data/"
+          rm -f "$WORK/.env" "$WORK/data/.env" 2>/dev/null || true
+
+          cat > "$WORK/.gitignore" <<'EOF'
+          .env
+          __pycache__/
+          EOF
+
+          cd "$WORK"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "تغییری برای ذخیره نبود."
+          else
+            git commit -m "Persist bot database $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+            git push origin HEAD:bot-data
+            echo "دیتابیس روی برنچ bot-data ذخیره شد."
+          fi
