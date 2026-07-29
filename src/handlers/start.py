@@ -150,6 +150,9 @@ async def generic_menu(call: CallbackQuery, state: FSMContext):
 
 @router.message(Command("admin"))
 async def admin_hidden_login(message: Message, state: FSMContext):
+    if not ADMIN_LOGIN or not ADMIN_PASSWORD:
+        await message.answer("🔐 ورود ادمین فعلاً غیرفعاله — توی `.env` مقدارهای ADMIN_LOGIN و ADMIN_PASSWORD رو بذار.")
+        return
     await state.clear()
     await state.set_state(AdminLogin.username)
     await message.answer(T.ADMIN_LOGIN_ASK_USER)

@@ -24,8 +24,8 @@ ADMIN_IDS: list[int] = [
 DB_PATH: str = os.getenv("DB_PATH", str(BASE_DIR / "data" / "ghayoomi.db"))
 
 # 🔐 ورود مخفی ادمین — یوزرنیم/رمز پنل مدیریت
-ADMIN_LOGIN: str = os.getenv("ADMIN_LOGIN", "CHANGE_ME")
-ADMIN_PASSWORD: str = os.getenv("ADMIN_PASSWORD", "CHANGE_ME")
+ADMIN_LOGIN: str = os.getenv("ADMIN_LOGIN", "").strip()
+ADMIN_PASSWORD: str = os.getenv("ADMIN_PASSWORD", "").strip()
 
 BOT_NAME = "Ghayoomi Examer"
 BOT_USERNAME = "@GhayoomiARBot"
