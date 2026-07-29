@@ -1,21 +1,26 @@
-name: Run Ghayoomi Examer Bot (manual)
+name: Run Ghayoomi Examer Bot
 
-# فقط با دکمه‌ی دستی "Run workflow" از تب Actions روشن می‌شود.
-# هیچ زمان‌بندی خودکاری ندارد — یعنی خودت کنترل کامل روشن/خاموش شدن را داری.
+# 🤖 اجرای خودکار + دستی — نسخهٔ ۲۴/۷
 #
-# نکات مهم:
-# - هر اجرا حداکثر ۳۵۰ دقیقه (نزدیک به ۶ ساعت) اجازه دارد بماند، بعدش خودکار متوقف می‌شود.
-# - برای خاموش کردن زودتر: برو به تب Actions → همین اجرا → دکمه "Cancel workflow".
-# - دیتابیس بین هر اجرا روی برنچ جدا به اسم bot-data ذخیره و بازیابی می‌شود؛
-#   یعنی کاربران، آزمون‌ها و فلش‌کارت‌ها بین دفعات روشن‌کردن از بین نمی‌روند.
+# چطور کار می‌کند:
+# - هر ۶ ساعت به‌صورت خودکار (cron) ربات بالا می‌آید و ~۵:۴۵ ساعت روشن می‌ماند.
+#   اجرای بعدی در صف می‌ایستد و درست وقتی قبلی تمام شد شروع می‌شود → پوشش تقریباً شبانه‌روزی.
+# - ورک‌فلوی کمکی bot-watchdog.yml هر ۳۰ دقیقه وضعیت را چک می‌کند؛ اگر ربات به هر دلیلی
+#   خاموش بود (خطا، تأخیر زمان‌بند، کنسل‌شدن) خودکار دوباره روشنش می‌کند.
+# - اجرای دستی هم همیشه در دسترس است: تب Actions → این ورک‌فلو → Run workflow.
+# - برای خاموش‌کردن کامل: تب Actions → ⋯ → Disable workflow (و اجرای فعلی را Cancel کنید).
+# - دیتابیس بین اجراها روی برنچ bot-data ذخیره و بازیابی می‌شود؛ کاربران و محتوا پابرجا می‌مانند.
 
 on:
   workflow_dispatch:
     inputs:
       run_minutes:
-        description: "چند دقیقه روشن بماند؟ (حداکثر پیشنهادی 340)"
+        description: "چند دقیقه روشن بماند؟ (پیش‌فرض ۳۴۵ — حداکثر مؤثر)"
         required: false
-        default: "180"
+        default: "345"
+  schedule:
+    # هر ۶ ساعت، با فاصله از ساعت رُند (دقّت بالاتر در صف گیت‌هاب)
+    - cron: "23 */6 * * *"
 
 concurrency:
   group: ghayoomi-examer-bot-live
@@ -45,7 +50,7 @@ jobs:
           [ -z "$SECRET_ADMIN_LOGIN" ] && MISSING="$MISSING ADMIN_LOGIN"
           [ -z "$SECRET_ADMIN_PASSWORD" ] && MISSING="$MISSING ADMIN_PASSWORD"
           if [ -n "$MISSING" ]; then
-            echo "::error title=Secrets ناقص!::این سکرت‌ها در Settings → Secrets and variables → Actions ست نشده‌اند:$MISSING — پنجرهٔ راهنما را دنبال کنید."
+            echo "::error title=Secrets ناقص!::این سکرت‌ها در Settings → Secrets and variables → Actions ست نشده‌اند:$MISSING"
             exit 42
           fi
           echo "✅ هر ۴ سکرت ست هستند — بریم بوم!"
@@ -102,7 +107,10 @@ jobs:
         run: |
           set +e
           MINUTES="${{ github.event.inputs.run_minutes }}"
-          MINUTES="${MINUTES:-180}"
+          # اجرای زمان‌بندی‌شده یا بدون ورودی → حداکثر زمان ممکن
+          if [ -z "$MINUTES" ]; then
+            MINUTES=345
+          fi
           SECONDS_TOTAL=$((MINUTES * 60))
           echo "ربات برای حدود $MINUTES دقیقه اجرا می‌شود..."
           timeout "$SECONDS_TOTAL" python bot.py
