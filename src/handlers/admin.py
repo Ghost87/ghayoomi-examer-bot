@@ -50,21 +50,6 @@ def _wizard_back_kb(back_cb: str = "ad:back") -> InlineKeyboardMarkup:
     return b.as_markup()
 
 
-# ═══════════════ Guard middleware: همهٔ پیام‌های ادمین بررسی بشن ═══════════════
-
-@router.message()
-async def admin_guard_message(message: Message, state: FSMContext):
-    """اگه پیام از یه ادمین اومد، و state داره، و handler نداره، اینجا هندل می‌شه."""
-    # این handler فقط برای حالت‌های خاص (مثل ویزارد) هست
-    pass
-
-
-@router.callback_query()
-async def admin_guard_callback(call: CallbackQuery, state: FSMContext):
-    """برای callbackهای unhandled: پیام راهنما بده."""
-    await call.answer("⚠️ این دکمه قدیمیه. از کیبورد پایین استفاده کن.", show_alert=False)
-
-
 # ═══════════════ کیبورد Reply ادمین ═══════════════
 
 @router.message(F.text == "🧪 ساخت آزمون")
@@ -1584,3 +1569,20 @@ async def wizard_cancel(call: CallbackQuery, state: FSMContext):
     await state.clear()
     await call.message.edit_text("↩️ لغو شد — از کیبورد پایین استفاده کن.")
     await call.answer()
+
+
+# ═══════════════ Guard: پیام/دکمه‌های بی‌صاحب ادمین ═══════════════
+# ⚠️ این دو handler حتماً باید آخر فایل بمانند (بعد از همهٔ handlerهای
+# اختصاصی بالا). چون بدون فیلترن، اگه بالای فایل باشن هر پیام/دکمه‌ای
+# رو قبل از رسیدن به handler واقعیش می‌قاپن و بی‌جواب می‌ذارن.
+
+@router.message()
+async def admin_guard_message(message: Message, state: FSMContext):
+    """فقط برای پیام‌های واقعاً بی‌صاحب (که هیچ handler دیگه‌ای جواب نداده)."""
+    pass
+
+
+@router.callback_query()
+async def admin_guard_callback(call: CallbackQuery, state: FSMContext):
+    """برای callbackهای unhandled: پیام راهنما بده."""
+    await call.answer("⚠️ این دکمه قدیمیه. از کیبورد پایین استفاده کن.", show_alert=False)
