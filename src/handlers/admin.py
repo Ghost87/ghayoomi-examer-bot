@@ -115,7 +115,8 @@ async def admin_kb_card_manage(message: Message):
     b = InlineKeyboardBuilder()
     for g in GRADES:
         b.button(text=f"{GRADE_ICON[g]} {g}", callback_data=f"adm:card:g:{g}")
-    b.adjust(3)
+    b.button(text="🔙 بازگشت", callback_data="ad:back")
+    b.adjust(3, 1)
     await message.answer(text, reply_markup=b.as_markup())
 
 
@@ -849,7 +850,8 @@ async def card_menu(call: CallbackQuery):
     b = InlineKeyboardBuilder()
     for g in GRADES:
         b.button(text=f"{GRADE_ICON[g]} {g}", callback_data=f"adm:card:g:{g}")
-    b.adjust(3)
+    b.button(text="🔙 بازگشت", callback_data="ad:back")
+    b.adjust(3, 1)
     await call.message.edit_text(text, reply_markup=b.as_markup())
     await call.answer()
 
@@ -874,6 +876,7 @@ async def adm_card_grade(call: CallbackQuery):
         title = f"{l['en']}" if l else f"درس {ln}"
         total = sum(r["c"] for r in lessons[ln])
         b.button(text=f"📖 درس {ln}: {title} ({total} کارت)", callback_data=f"adm:card:l:{grade}:{ln}")
+    b.button(text="🔙 بازگشت", callback_data="adm:card:b:root")
     b.adjust(1)
     await call.message.edit_text(
         f"🃏 <b>مدیریت — {grade}</b>\n\nیه درس انتخاب کن:",
@@ -898,6 +901,7 @@ async def adm_card_lesson(call: CallbackQuery):
     b = InlineKeyboardBuilder()
     for c in cats:
         b.button(text=f"{CATEGORY_ICON.get(c, '🗂')} {c}", callback_data=f"adm:card:c:{grade}:{lesson}:{c}")
+    b.button(text="🔙 بازگشت", callback_data=f"adm:card:b:lessons:{grade}")
     b.adjust(1)
     await call.message.edit_text(
         f"🃏 <b>{grade} | درس {lesson}</b>\n\nکدوم دسته؟",
@@ -930,6 +934,7 @@ async def adm_card_category(call: CallbackQuery):
     b = InlineKeyboardBuilder()
     for c in cards[:15]:
         b.button(text=f"✏️ {c['front'][:20]}", callback_data=f"adm:card:e:{c['id']}")
+    b.button(text="🔙 بازگشت", callback_data=f"adm:card:b:cats:{grade}:{lesson}")
     b.adjust(1)
     await call.message.edit_text(text, reply_markup=b.as_markup())
     await call.answer()
@@ -956,6 +961,7 @@ async def adm_card_edit_view(call: CallbackQuery):
     )
     b = InlineKeyboardBuilder()
     b.button(text="🗑 حذف", callback_data=f"adm:card:d:{card['id']}")
+    b.button(text="🔙 بازگشت به لیست", callback_data=f"adm:card:b:list:{card['grade']}:{card['lesson']}:{card['category']}")
     b.adjust(1)
     await call.message.edit_text(text, reply_markup=b.as_markup())
     await call.answer()
@@ -966,9 +972,106 @@ async def adm_card_delete(call: CallbackQuery):
     if not _is_admin(call.from_user.id):
         return await call.answer()
     card_id = int(call.data.split(":")[-1])
-    get_db().delete_card(card_id)
-    await call.message.edit_text(f"🗑 کارت #{card_id} حذف شد.")
+    db = get_db()
+    _card = db.con.execute("SELECT * FROM cards WHERE id=?", (card_id,)).fetchone()
+    db.delete_card(card_id)
+    _kb = None
+    if _card:
+        _b = InlineKeyboardBuilder()
+        _b.button(text="🔙 بازگشت به لیست", callback_data=f"adm:card:b:list:{_card['grade']}:{_card['lesson']}:{_card['category']}")
+        _kb = _b.as_markup()
+    await call.message.edit_text(f"🗑 کارت #{card_id} حذف شد.", reply_markup=_kb)
     await call.answer("✅ حذف شد")
+
+
+# ── 🔙 برگشت‌های مدیریت فلش‌کارت ─────────────────
+
+async def _adm_render_lessons(message, grade: str) -> None:
+    db = get_db()
+    counts = db.card_counts(grade=grade)
+    if not counts:
+        await message.edit_text("🏜 کارتی در این بخش نیست.")
+        return
+    lessons = {}
+    for r in counts:
+        lessons.setdefault(r["lesson"], []).append(r)
+    b = InlineKeyboardBuilder()
+    for ln in sorted(lessons.keys()):
+        l = LESSONS[grade][ln - 1] if ln <= len(LESSONS[grade]) else None
+        title = f"{l['en']}" if l else f"درس {ln}"
+        total = sum(r["c"] for r in lessons[ln])
+        b.button(text=f"📖 درس {ln}: {title} ({total} کارت)", callback_data=f"adm:card:l:{grade}:{ln}")
+    b.button(text="🔙 بازگشت", callback_data="adm:card:b:root")
+    b.adjust(1)
+    await message.edit_text(f"🃏 <b>مدیریت — {grade}</b>\n\nیه درس انتخاب کن:", reply_markup=b.as_markup())
+
+
+async def _adm_render_cats(message, grade: str, lesson: int) -> None:
+    db = get_db()
+    counts = db.card_counts(grade=grade)
+    cats = [r["category"] for r in counts if r["lesson"] == lesson]
+    if not cats:
+        await message.edit_text("🏜 کارتی در این درس نیست.")
+        return
+    b = InlineKeyboardBuilder()
+    for c in cats:
+        b.button(text=f"{CATEGORY_ICON.get(c, '🗂')} {c}", callback_data=f"adm:card:c:{grade}:{lesson}:{c}")
+    b.button(text="🔙 بازگشت", callback_data=f"adm:card:b:lessons:{grade}")
+    b.adjust(1)
+    await message.edit_text(f"🃏 <b>{grade} | درس {lesson}</b>\n\nکدوم دسته؟", reply_markup=b.as_markup())
+
+
+async def _adm_render_list(message, grade: str, lesson: int, category: str) -> None:
+    db = get_db()
+    cards = db.get_deck(grade, lesson, category)
+    if not cards:
+        await message.edit_text("🏜 کارتی در این بخش نیست.")
+        return
+    items = [f"<code>{c['id']}</code> | <b>{c['front'][:30]}</b> → {c['back'][:30]}" for c in cards[:15]]
+    text = (f"🃏 <b>{grade} | درس {lesson} | {category}</b> ({len(cards)} کارت)\n\n"
+            + "\n".join(items) + "\n\n💡 روی هر کارت بزن:")
+    b = InlineKeyboardBuilder()
+    for c in cards[:15]:
+        b.button(text=f"✏️ {c['front'][:20]}", callback_data=f"adm:card:e:{c['id']}")
+    b.button(text="🔙 بازگشت", callback_data=f"adm:card:b:cats:{grade}:{lesson}")
+    b.adjust(1)
+    await message.edit_text(text, reply_markup=b.as_markup())
+
+
+@router.callback_query(F.data == "adm:card:b:root")
+async def adm_back_root(call: CallbackQuery):
+    """برگشت به لیست پایه‌ها."""
+    if not _is_admin(call.from_user.id):
+        return await call.answer()
+    await card_menu(call)
+
+
+@router.callback_query(F.data.startswith("adm:card:b:lessons:"))
+async def adm_back_lessons(call: CallbackQuery):
+    """برگشت به لیست درس‌ها."""
+    if not _is_admin(call.from_user.id):
+        return await call.answer()
+    await _adm_render_lessons(call.message, call.data.split(":")[-1])
+    await call.answer()
+
+
+@router.callback_query(F.data.startswith("adm:card:b:cats:"))
+async def adm_back_cats(call: CallbackQuery):
+    """برگشت به لیست دسته‌ها."""
+    if not _is_admin(call.from_user.id):
+        return await call.answer()
+    await _adm_render_cats(call.message, call.data.split(":")[-2], int(call.data.split(":")[-1]))
+    await call.answer()
+
+
+@router.callback_query(F.data.startswith("adm:card:b:list:"))
+async def adm_back_list(call: CallbackQuery):
+    """برگشت به لیست کارت‌ها."""
+    if not _is_admin(call.from_user.id):
+        return await call.answer()
+    parts = call.data.split(":")
+    await _adm_render_list(call.message, parts[-3], int(parts[-2]), parts[-1])
+    await call.answer()
 
 
 # ── ویزارد افزودن دستی ────────────────────────
