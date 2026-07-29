@@ -1,0 +1,158 @@
+name: 🧹 Admin Tools — مدیریت داده‌های کاربران
+
+# ابزار دکمه‌ای برای پاک‌سازی داده‌های کاربران — ARIAMIR
+#
+# نحوه‌ی استفاده (مهم، ترتیب را رعایت کنید):
+#   ۱) اگر اجرای فعالی از «Run Ghayoomi Examer Bot» هست: Actions → روی اجرا → Cancel workflow
+#      (این ورک‌فلو خودش هم چک می‌کند و اگر ربات روشن بود، اجازه‌ی ادامه نمی‌دهد)
+#   ۲) Actions → «🧹 Admin Tools» → Run workflow → حالت موردنظر را انتخاب کنید:
+#        • wipe_users      = حذف همه‌ی کاربران + فعالیت‌ها
+#        • delete_one_user = حذف فقط یک کاربر (آیدی عددی را در کادر user_id بزنید)
+#        • reset_stats     = فقط صفرکردن آمار (کاربران می‌مانند)
+#   ۳) پایان اجرا → ربات را دوباره روشن کنید (Run workflow روی ورک‌فلوی اصلی
+#      یا صبر کنید نگهبانِ ۳۰ دقیقه‌ای خودش روشنش کند).
+#
+# جدول‌های محتوایی (کارت‌ها، آزمون‌ها، سوالات، متن‌ها، همگانی‌ها) هرگز پاک نمی‌شوند.
+# نتیجه روی برنچ bot-data ذخیره می‌شود.
+
+on:
+  workflow_dispatch:
+    inputs:
+      action:
+        description: "wipe_users = همه‌ی کاربران+فعالیت‌ها | delete_one_user = فقط یک کاربر (user_id لازم) | reset_stats = فقط صفرکردن آمار"
+        required: true
+        type: choice
+        options:
+          - wipe_users
+          - delete_one_user
+          - reset_stats
+        default: wipe_users
+      user_id:
+        description: "آیدی عددی کاربر (فقط در حالت delete_one_user لازم است)"
+        required: false
+        default: ""
+
+concurrency:
+  group: ghayoomi-examer-bot-live
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  admin-tools:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    env:
+      TOOL_ACTION: ${{ inputs.action }}
+      TOOL_USER_ID: ${{ inputs.user_id }}
+
+    steps:
+      - name: 🛡️ Guard — ربات نباید روشن باشد
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -e
+          api() {
+            curl -sf -H "Authorization: Bearer $GH_TOKEN" \
+                 -H "Accept: application/vnd.github+json" "$@"
+          }
+          ACTIVE=$(api "https://api.github.com/repos/$REPO/actions/workflows/run-bot.yml/runs?status=in_progress&per_page=1" \
+            | python3 -c "import sys,json;print(json.load(sys.stdin).get('total_count',0))")
+          QUEUED=$(api "https://api.github.com/repos/$REPO/actions/workflows/run-bot.yml/runs?status=queued&per_page=1" \
+            | python3 -c "import sys,json;print(json.load(sys.stdin).get('total_count',0))")
+          if [ "$ACTIVE" != "0" ] || [ "$QUEUED" != "0" ]; then
+            echo "::error title=ربات روشن است!::اشتراک Actions → اجرای فعال «Run Ghayoomi Examer Bot» را Cancel کنید و دوباره این ابزار را اجرا کنید. (درحال‌اجرا=$ACTIVE درصف=$QUEUED)"
+            exit 1
+          fi
+          echo "✅ هیچ اجرای ربات فعال نیست — امنه، ادامه می‌دهیم."
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Restore database from bot-data branch
+        run: |
+          set -e
+          mkdir -p data
+          if git ls-remote --exit-code --heads origin bot-data >/dev/null 2>&1; then
+            git fetch origin bot-data:bot-data --depth=1
+            git checkout bot-data -- data 2>/dev/null || true
+            echo "دیتابیس از bot-data بازیابی شد."
+            ls -la data || true
+          else
+            echo "برنچ bot-data وجود ندارد."
+          fi
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: 🧹 اجرای ابزار پاک‌سازی
+        run: |
+          set -e
+          ARGS=(--action "$TOOL_ACTION" --db data/ghayoomi.db)
+          if [ -n "$TOOL_USER_ID" ]; then
+            ARGS+=(--user-id "$TOOL_USER_ID")
+          fi
+          python scripts/admin_tools.py "${ARGS[@]}"
+
+      - name: 🛡️ Guard دوم — قبل از ذخیره، دوباره چک
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+        run: |
+          api() {
+            curl -sf -H "Authorization: Bearer $GH_TOKEN" \
+                 -H "Accept: application/vnd.github+json" "$@"
+          }
+          ACTIVE=$(api "https://api.github.com/repos/$REPO/actions/workflows/run-bot.yml/runs?status=in_progress&per_page=1" \
+            | python3 -c "import sys,json;print(json.load(sys.stdin).get('total_count',0))")
+          if [ "$ACTIVE" != "0" ]; then
+            echo "::error::در این لحظه اجرای ربات تازه‌ای شروع شده — برای جلوگیری از تداخل، ذخیره انجام نمی‌شود. لطفاً دوباره ابزار را اجرا کنید."
+            exit 1
+          fi
+          echo "✅ همچنان امن است."
+
+      - name: 💾 ذخیره‌ی دیتابیس پاک‌سازی‌شده روی bot-data
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -e
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          WORK=$(mktemp -d)
+          REPO_URL="https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+
+          git clone --branch bot-data --depth 1 "$REPO_URL" "$WORK"
+          rm -rf "$WORK/data"
+          mkdir -p "$WORK/data"
+          cp -a data/. "$WORK/data/"
+          rm -f "$WORK/.env" "$WORK/data/.env" 2>/dev/null || true
+
+          cat > "$WORK/.gitignore" <<'EOF'
+          .env
+          __pycache__/
+          EOF
+
+          cd "$WORK"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "تغییری برای ذخیره نبود."
+          else
+            git commit -m "🧹 Admin tools: ${TOOL_ACTION} $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+            git push origin HEAD:bot-data
+            echo "✅ دیتابیس پاک‌سازی‌شده روی برنچ bot-data ذخیره شد."
+          fi
+
+      - name: 📢 خلاصه
+        if: success()
+        run: |
+          echo "🧹 عملیات «${TOOL_ACTION}» با موفقیت انجام و ذخیره شد."
+          echo "ℹ️ حالا می‌توانی ربات را دوباره روشن کنی (اجرا دستی یا صبر تا تیک نگهبان هر ۳۰ دقیقه — دقیقه‌های ۷ و ۳۷ ساعت)."
