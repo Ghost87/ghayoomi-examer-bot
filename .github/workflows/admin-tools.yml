@@ -76,7 +76,7 @@ jobs:
           echo "✅ هیچ اجرای ربات فعال/درصف/درانتظار نیست — امنه، ادامه می‌دهیم."
 
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
@@ -94,7 +94,7 @@ jobs:
           fi
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "3.11"
 
