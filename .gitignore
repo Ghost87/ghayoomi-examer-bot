@@ -22,3 +22,7 @@ Thumbs.db
 
 # لاگ
 *.log
+
+# بقایای دیتابیس (WAL)
+data/*.db-shm
+data/*.db-wal
