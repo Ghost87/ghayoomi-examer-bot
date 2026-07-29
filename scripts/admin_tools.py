@@ -14,7 +14,7 @@
 
 استفاده:
   python scripts/admin_tools.py --action wipe_users
-  python scripts/admin_tools.py --action delete_one_user --user-id 8975757230
+  python scripts/admin_tools.py --action delete_one_user --user-id 123456789
   python scripts/admin_tools.py --action reset_stats
   (مسیر دیتابیس با --db قابل تغییر است؛ پیش‌فرض: data/ghayoomi.db)
 """
@@ -69,7 +69,7 @@ def main() -> int:
     elif args.action == "delete_one_user":
         uid_raw = (args.user_id or "").strip()
         if not uid_raw.isdigit():
-            print("\n❌ برای delete_one_user باید --user-id عددی بدهی (مثل: 8975757230).")
+            print("\n❌ برای delete_one_user باید --user-id عددی بدهی (مثل: 123456789).")
             return 1
         uid = int(uid_raw)
         row = cur.execute("SELECT name, username FROM users WHERE id = ?", (uid,)).fetchone()
