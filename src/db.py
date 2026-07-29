@@ -149,8 +149,26 @@ class DB:
     def __init__(self, db_path: str):
         init_db(db_path)
         self.con = connect(db_path)
+        self._migrate_users_in_panel()
+
+    def _migrate_users_in_panel(self) -> None:
+        """🆕 افزودن ستون in_panel (۱ = کاربر الان داخل پنل مدیریت است)."""
+        try:
+            self.con.execute("ALTER TABLE users ADD COLUMN in_panel INTEGER NOT NULL DEFAULT 0")
+        except sqlite3.OperationalError:
+            pass  # ستون از قبل هست
 
     # ─────────────── کاربران ───────────────
+
+    def users_total(self) -> int:
+        """🆕 تعداد کل کاربران (برای صفحه‌بندی)."""
+        return self.con.execute("SELECT COUNT(*) c FROM users").fetchone()["c"]
+
+    def users_page(self, offset: int, limit: int) -> list[sqlite3.Row]:
+        """🆕 یک صفحه از کاربران — جدیدترین‌ها اول (صاحب/ادمین هم داخل لیست می‌مانند)."""
+        return self.con.execute(
+            "SELECT * FROM users ORDER BY id DESC LIMIT ? OFFSET ?", (limit, offset)
+        ).fetchall()
 
     def upsert_user(self, uid: int, username: str | None) -> None:
         with self.con:
@@ -175,7 +193,7 @@ class DB:
     def set_user_field(self, uid: int, field: str, value) -> None:
         allowed = {
             "name", "grade", "major", "role", "is_blocked",
-            "reminder_on", "reminder_hour", "last_reminded",
+            "reminder_on", "reminder_hour", "last_reminded", "in_panel",
         }
         if field not in allowed:
             raise ValueError(f"field not allowed: {field}")

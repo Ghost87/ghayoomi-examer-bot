@@ -86,7 +86,9 @@ def _admin_panel_kb() -> ReplyKeyboardMarkup:
         ],
         # ردیف ۵: ویرایش متن‌ها (تک)
         [KeyboardButton(text="✏️ ویرایش متن‌ها", style="primary")],
-        # ردیف ۶: بازگشت (تک)
+        # ردیف ۶: راهنما (تک) 🆕 — بدون خروج از پنل
+        [KeyboardButton(text=BTN_HELP)],
+        # ردیف ۷: بازگشت (تک)
         [KeyboardButton(text="↩️ بازگشت به منو")],
     ]
     return ReplyKeyboardMarkup(
@@ -486,21 +488,24 @@ def confirm_kb(prefix: str, payload: str) -> InlineKeyboardMarkup:
     return b.as_markup()
 
 
-def user_admin_kb(uid: int, is_blocked: bool, role: str, viewer_is_owner: bool) -> InlineKeyboardMarkup:
+def user_admin_kb(uid: int, is_blocked: bool, role: str, viewer_is_owner: bool,
+                  page: int = 0) -> InlineKeyboardMarkup:
+    """🆕 کارت کاربر — دکمه‌ها صفحهٔ فعلی لیست رو حفظ می‌کنن (بازگشت = دقیقاً یک مرحله)."""
     b = InlineKeyboardBuilder()
     b.button(
         text="🔓 رفع مسدودی" if is_blocked else "🔒 مسدود کن",
-        callback_data=f"ad:u:block:{uid}",
+        callback_data=f"ad:u:block:{uid}:{page}",
     )
     if viewer_is_owner and role != "owner":
         b.button(
             text="➖ حذف ادمین" if role == "admin" else "🛡 ادمین کن",
-            callback_data=f"ad:u:role:{uid}",
+            callback_data=f"ad:u:role:{uid}:{page}",
         )
-    b.button(text="🔄 تازه‌سازی آمار", callback_data=f"ad:u:refresh:{uid}")
-    b.button(text=T.BTN_BACK, callback_data="ad:users:back")
+    b.button(text="🔄 تازه‌سازی آمار", callback_data=f"ad:u:refresh:{uid}:{page}")
+    b.button(text=T.BTN_BACK, callback_data=f"ad:users:page:{page}")
     b.button(text=T.BTN_MENU, callback_data="ad:menu")
-    b.adjust(2, 1, 1, 1)
+    role_btn = viewer_is_owner and role != "owner"
+    b.adjust(2 if role_btn else 1, 1, 2)
     return b.as_markup()
 
 
@@ -601,14 +606,29 @@ def kb_menu_only() -> InlineKeyboardMarkup:
     return b.as_markup()
 
 
-# 🐛 FIX: دکمهٔ بازگشت در مدیریت کاربران + فیلتر و تیم مدیریت
-def users_menu_kb() -> InlineKeyboardMarkup:
-    """کیبورد صفحهٔ مدیریت کاربران — با فیلتر ادمین و لینک تیم مدیریت."""
+def _user_button_label(u) -> str:
+    """🆕 لیبل دکمهٔ کاربر: ایموجی نقش + نام کاربری (یا نام/آیدی اگر نداشت)."""
+    emoji = {"owner": "👑", "admin": "🛡"}.get(u["role"], "👤")
+    uname = f"@{u['username']}" if u["username"] else (u["name"] or f"id:{u['id']}")
+    return f"{emoji} {uname}"
+
+
+def users_list_kb(users, page: int, total_pages: int) -> InlineKeyboardMarkup:
+    """🆕 لیست صفحه‌بندی‌شدهٔ کاربران — هر کاربر یه دکمه با نام‌کاربری + قبلی/بعدی."""
     b = InlineKeyboardBuilder()
-    b.button(text="🛡 فقط ادمین‌ها", callback_data="ad:users:filter:admins")
-    b.button(text="👥 همه کاربران", callback_data="ad:users:filter:all")
-    b.button(text="🛡 تیم مدیریت", callback_data="ad:admins")
-    b.button(text=T.BTN_BACK, callback_data="ad:users:back")
+    for u in users:
+        b.button(text=_user_button_label(u), callback_data=f"ad:u:view:{u['id']}:{page}")
+    if total_pages > 1:
+        prev_cb = f"ad:users:page:{page - 1}" if page > 0 else "ad:noop"
+        next_cb = f"ad:users:page:{page + 1}" if page < total_pages - 1 else "ad:noop"
+        b.button(text="◀️ قبلی", callback_data=prev_cb)
+        b.button(text=f"📄 {page + 1}/{total_pages}", callback_data="ad:noop")
+        b.button(text="بعدی ▶️", callback_data=next_cb)
+    b.button(text=T.BTN_BACK, callback_data="ad:back")
     b.button(text=T.BTN_MENU, callback_data="ad:menu")
-    b.adjust(2, 1, 2)
+    sizes = [1] * len(users)
+    if total_pages > 1:
+        sizes.append(3)
+    sizes.append(2)
+    b.adjust(*sizes)
     return b.as_markup()

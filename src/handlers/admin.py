@@ -153,19 +153,10 @@ async def admin_kb_users(message: Message, state: FSMContext):
     if not _is_admin(message.from_user.id):
         return
     await state.clear()
-    db = get_db()
-    counts = db.user_counts()
-    admins = db.admin_ids()
     await state.set_state(AdminSearch.user)
     await state.update_data(users_search_role=None)
-    await message.answer(
-        T.ADMIN_USERS_MENU.format(
-            total=counts["total"], today=counts["today"],
-            week=counts["week"], blocked=counts["blocked"],
-            admins=len(admins),
-        ),
-        reply_markup=K.users_menu_kb(),
-    )
+    text, kb = _users_menu_payload(get_db(), 0)
+    await message.answer(text, reply_markup=kb)
 
 
 @router.message(F.text == "🛡 تیم مدیریت")
@@ -216,6 +207,7 @@ async def admin_kb_content(message: Message):
 async def admin_kb_back_user(message: Message, state: FSMContext):
     """خروج از پنل و برگشت به منوی کاربری."""
     await state.clear()
+    get_db().set_user_field(message.from_user.id, "in_panel", 0)
     await message.answer(
         T.MAIN_MENU_HINT,
         reply_markup=K.main_menu(is_admin=True, in_admin_panel=False),
@@ -1201,68 +1193,57 @@ async def card_add_tip(message: Message, state: FSMContext):
 
 # ═══════════════ کاربران ═══════════════
 
+USERS_PER_PAGE = 8
+
+
+def _users_menu_payload(db, page: int):
+    """🆕 متن + کیبورد صفحه‌بندی‌شدهٔ مدیریت کاربران."""
+    counts = db.user_counts()
+    admins = db.admin_ids()
+    total_users = db.users_total()
+    pages = max(1, -(-total_users // USERS_PER_PAGE))
+    page = max(0, min(page, pages - 1))
+    rows = db.users_page(page * USERS_PER_PAGE, USERS_PER_PAGE)
+    text = T.ADMIN_USERS_MENU.format(
+        total=counts["total"], today=counts["today"],
+        week=counts["week"], blocked=counts["blocked"],
+        admins=len(admins), page=page + 1, pages=pages,
+    )
+    return text, K.users_list_kb(rows, page, pages)
+
+
+@router.callback_query(F.data == "ad:noop")
+async def noop_cb(call: CallbackQuery):
+    """دکمهٔ غیرفعال (شمارهٔ صفحه)."""
+    await call.answer()
+
+
 @router.callback_query(F.data == "ad:users")
 async def users_menu(call: CallbackQuery, state: FSMContext):
     if not _is_admin(call.from_user.id):
         return await call.answer()
-    db = get_db()
-    counts = db.user_counts()
-    admins = db.admin_ids()
     await state.set_state(AdminSearch.user)
     await state.update_data(users_search_role=None)
-    await call.message.edit_text(
-        T.ADMIN_USERS_MENU.format(
-            total=counts["total"], today=counts["today"],
-            week=counts["week"], blocked=counts["blocked"],
-            admins=len(admins),
-        ),
-        reply_markup=K.users_menu_kb(),
-    )
+    text, kb = _users_menu_payload(get_db(), 0)
+    await call.message.edit_text(text, reply_markup=kb)
+    await call.answer()
+
+
+@router.callback_query(F.data.startswith("ad:users:page:"))
+async def users_page_cb(call: CallbackQuery):
+    """🆕 رفتن به صفحهٔ قبلی/بعدی لیست کاربران."""
+    if not _is_admin(call.from_user.id):
+        return await call.answer()
+    page = int(call.data.split(":")[-1])
+    text, kb = _users_menu_payload(get_db(), page)
+    await call.message.edit_text(text, reply_markup=kb)
     await call.answer()
 
 
 @router.callback_query(F.data == "ad:users:back")
 async def users_back(call: CallbackQuery, state: FSMContext):
-    if not _is_admin(call.from_user.id):
-        return await call.answer()
-    await state.clear()
-    await call.answer("↩️ برگشتی")
-
-
-@router.callback_query(F.data == "ad:users:filter:admins", AdminSearch.user)
-async def users_filter_admins(call: CallbackQuery, state: FSMContext):
-    if not _is_admin(call.from_user.id):
-        return await call.answer()
-    db = get_db()
-    admins = db.con.execute(
-        "SELECT * FROM users WHERE role IN ('owner','admin') ORDER BY role, id"
-    ).fetchall()
-    if not admins:
-        text = "🛡 <b>تیم مدیریت</b>\n\nفعلاً هیچ ادمینی ثبت نشده."
-    else:
-        lines = []
-        for a in admins:
-            role_emoji = "👑" if a["role"] == "owner" else "🛡"
-            username = f"@{a['username']}" if a["username"] else "—"
-            lines.append(
-                f"{role_emoji} <b>{a['name'] or '—'}</b>\n"
-                f"    🆔 <code>{a['id']}</code> | {username}\n"
-                f"    {a['grade'] or '—'} | {a['major'] or '—'}"
-            )
-        text = "🛡 <b>تیم مدیریت</b>\n\n" + "\n\n".join(lines)
-    b = InlineKeyboardBuilder()
-    b.button(text="↩️ بازگشت", callback_data="ad:users")
-    b.adjust(1)
-    await call.message.edit_text(text, reply_markup=b.as_markup())
-    await call.answer()
-
-
-@router.callback_query(F.data == "ad:users:filter:all", AdminSearch.user)
-async def users_filter_all(call: CallbackQuery, state: FSMContext):
-    if not _is_admin(call.from_user.id):
-        return await call.answer()
-    await users_menu(call, state)
-    await call.answer()
+    """بازگشت از مدیریت کاربران = یک مرحله به‌عقب → پنل مدیریت."""
+    await admin_back(call, state)
 
 
 @router.callback_query(F.data == "ad:admins")
@@ -1299,15 +1280,23 @@ async def _user_card_text(db, uid: int) -> str:
     if not u:
         return T.USER_NOT_FOUND
     role_label = {"owner": "👑 صاحب ربات", "admin": "🛡 ادمین", "student": "🧑‍🎓 دانش‌آموز"}[u["role"]]
+    finished = [a for a in db.user_attempts(uid) if a["finished_at"]]
+    lines = [
+        f"▫️ {a['title']}: <b>{a['score']}/{a['total']}</b> ({a['percent']:.0f}٪)"
+        for a in finished[:8]
+    ]
+    if len(finished) > 8:
+        lines.append(f"… و {len(finished) - 8} آزمون دیگر")
     return T.USER_CARD.format(
         name=u["name"] or "—", uid=u["id"], username=u["username"] or "—",
         grade=u["grade"] or "—", grade_icon=GRADE_ICON.get(u["grade"], "📚"),
         major=u["major"] or "—", role=role_label,
         blocked="🔴 مسدود" if u["is_blocked"] else "🟢 فعال",
         cards=db.user_cards_viewed(uid),
-        exams=len([a for a in db.user_attempts(uid) if a["finished_at"]]),
+        exams=len(finished),
         points=db.user_points(uid),
         joined=u["created_at"][:10], active=u["last_active"][:16],
+        exams_lines="\n".join(lines) if lines else "—",
     )
 
 
@@ -1351,11 +1340,19 @@ async def users_search(message: Message, state: FSMContext):
     await message.answer(f"🔍 <b>{len(rows)} نفر پیدا شد:</b>", reply_markup=b.as_markup())
 
 
+def _parse_uid_page(call_data: str) -> tuple[int, int]:
+    """🆕 خروجی: (user_id, page) — page اختیاری است (پیش‌فرض ۰)."""
+    parts = call_data.split(":")
+    uid = int(parts[3])
+    page = int(parts[4]) if len(parts) > 4 else 0
+    return uid, page
+
+
 @router.callback_query(F.data.startswith("ad:u:view:"))
 async def user_view(call: CallbackQuery, state: FSMContext):
     if not _is_admin(call.from_user.id):
         return await call.answer()
-    uid = int(call.data.split(":")[-1])
+    uid, page = _parse_uid_page(call.data)
     db = get_db()
     u = db.get_user(uid)
     if not u:
@@ -1367,7 +1364,7 @@ async def user_view(call: CallbackQuery, state: FSMContext):
         await _user_card_text(db, uid),
         reply_markup=K.user_admin_kb(
             uid, bool(u["is_blocked"]), u["role"],
-            viewer_is_owner=viewer["role"] == "owner",
+            viewer_is_owner=viewer["role"] == "owner", page=page,
         ),
     )
     await call.answer()
@@ -1377,7 +1374,7 @@ async def user_view(call: CallbackQuery, state: FSMContext):
 async def user_toggle_block(call: CallbackQuery):
     if not _is_admin(call.from_user.id):
         return await call.answer()
-    uid = int(call.data.split(":")[-1])
+    uid, page = _parse_uid_page(call.data)
     db = get_db()
     u = db.get_user(uid)
     if u["role"] in ("owner", "admin"):
@@ -1391,7 +1388,7 @@ async def user_toggle_block(call: CallbackQuery):
         await _user_card_text(db, uid),
         reply_markup=K.user_admin_kb(
             uid, bool(u["is_blocked"]), u["role"],
-            viewer_is_owner=viewer["role"] == "owner",
+            viewer_is_owner=viewer["role"] == "owner", page=page,
         ),
     )
 
@@ -1400,19 +1397,34 @@ async def user_toggle_block(call: CallbackQuery):
 async def user_toggle_admin(call: CallbackQuery):
     if not _is_admin(call.from_user.id):
         return await call.answer()
-    uid = int(call.data.split(":")[-1])
+    uid, page = _parse_uid_page(call.data)
     db = get_db()
     u = db.get_user(uid)
     new_role = "student" if u["role"] == "admin" else "admin"
     db.set_user_field(uid, "role", new_role)
+    db.set_user_field(uid, "in_panel", 0)  # 🆕 پرچم پنل ریست بشه
     await call.answer("🛡 نقش عوض شد" if new_role == "admin" else "➖ ادمینی لغو شد")
+    # 🆕 اطلاع‌رسانی زنده به خودِ کاربر + آپدیت کیبوردش
+    try:
+        if new_role == "admin":
+            await call.bot.send_message(
+                uid, T.ADMIN_PROMOTED,
+                reply_markup=K.main_menu(is_admin=True),
+            )
+        else:
+            await call.bot.send_message(
+                uid, T.ADMIN_DEMOTED,
+                reply_markup=K.main_menu(is_admin=False),
+            )
+    except Exception:
+        pass  # کاربر قابل پیام‌دادن نیست (بلاک/غیرفعال) — نقش به‌هرحال عوض شد
     u = db.get_user(uid)
     viewer = db.get_user(call.from_user.id)
     await call.message.edit_text(
         await _user_card_text(db, uid),
         reply_markup=K.user_admin_kb(
             uid, bool(u["is_blocked"]), u["role"],
-            viewer_is_owner=viewer["role"] == "owner",
+            viewer_is_owner=viewer["role"] == "owner", page=page,
         ),
     )
 
@@ -1421,7 +1433,7 @@ async def user_toggle_admin(call: CallbackQuery):
 async def user_refresh(call: CallbackQuery):
     if not _is_admin(call.from_user.id):
         return await call.answer()
-    uid = int(call.data.split(":")[-1])
+    uid, page = _parse_uid_page(call.data)
     db = get_db()
     u = db.get_user(uid)
     viewer = db.get_user(call.from_user.id)
@@ -1429,7 +1441,7 @@ async def user_refresh(call: CallbackQuery):
         await _user_card_text(db, uid),
         reply_markup=K.user_admin_kb(
             uid, bool(u["is_blocked"]), u["role"],
-            viewer_is_owner=viewer["role"] == "owner",
+            viewer_is_owner=viewer["role"] == "owner", page=page,
         ),
     )
     await call.answer("🔄 به‌روز شد")
@@ -1646,16 +1658,25 @@ async def content_save(message: Message, state: FSMContext):
 
 @router.callback_query(F.data == "ad:back")
 async def admin_back(call: CallbackQuery, state: FSMContext):
-    """ساده: فقط state پاک می‌شه. کاربر از کیبورد reply استفاده کنه."""
+    """🆕 بازگشت = دقیقاً یک مرحله به‌عقب → همین پیام به منوی پنل تبدیل می‌شود."""
+    if not _is_admin(call.from_user.id):
+        return await call.answer()
     await state.clear()
-    await call.answer("↩️ از کیبورد پایین استفاده کن", show_alert=False)
+    viewer = get_db().get_user(call.from_user.id)
+    await call.message.edit_text(
+        T.ADMIN_PANEL,
+        reply_markup=K.admin_menu_kb(is_owner=viewer["role"] == "owner"),
+    )
+    await call.answer("↩️ برگشتی به پنل")
 
 
 @router.callback_query(F.data == "ad:menu")
 async def admin_menu_cb(call: CallbackQuery, state: FSMContext):
+    """خروج آگاهانه به پنل دانش‌آموز (تنها دکمه‌ای که از پنل بیرون می‌برد)."""
     if not _is_admin(call.from_user.id):
         return await call.answer()
     await state.clear()
+    get_db().set_user_field(call.from_user.id, "in_panel", 0)
     await call.message.answer(
         T.MAIN_MENU_HINT,
         reply_markup=K.main_menu(is_admin(call.from_user.id), in_admin_panel=False),

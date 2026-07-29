@@ -132,6 +132,8 @@ async def admin_menu_button(message: Message, state: FSMContext):
         await message.answer("🚧 این دکمه فقط برای ادمین‌هاست.")
         return
     await state.clear()
+    # 🆕 پرچم «داخل پنل» (برای برگردوندن کیبورد پنل بعد از راهنما)
+    get_db().set_user_field(message.from_user.id, "in_panel", 1)
     # 🆕 منوی اصلی + کیبورد ادمین (هر دو باهم)
     await message.answer(
         T.MAIN_MENU_HINT,
@@ -142,6 +144,7 @@ async def admin_menu_button(message: Message, state: FSMContext):
 @router.callback_query(F.data == "gen:menu")
 async def generic_menu(call: CallbackQuery, state: FSMContext):
     await state.clear()
+    get_db().set_user_field(call.from_user.id, "in_panel", 0)
     await call.message.answer(T.MAIN_MENU_HINT, reply_markup=K.main_menu(is_admin(call.from_user.id)))
     await call.answer()
 
@@ -178,6 +181,7 @@ async def admin_login_password(message: Message, state: FSMContext):
         return
     # 🆕 ورود موفق: کیبورد ادمین فعال بشه + منوی اصلی هم بیاد
     await state.clear()
+    get_db().set_user_field(message.from_user.id, "in_panel", 1)
     await message.answer(
         T.ADMIN_LOGIN_OK,
         reply_markup=K.main_menu(is_admin=True, in_admin_panel=True),
